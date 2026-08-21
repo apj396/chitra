@@ -1,0 +1,10 @@
+{
+  "note": "Curator-maintained mark register for IP-TRADEMARK-001 pre-clearance. Not a substitute for a Registry of Trade Marks search; this catches known collisions early and cheaply so legal counsel sees fewer, better-formed questions. Seeded with examples only.",
+  "source": "tenant-supplied competitor marks plus manually entered registered marks",
+  "last_reviewed": "2026-08-12",
+  "marks": [
+    {"mark": "Rain Ready", "owner": "RivalCo Consumer Products", "nice_class": 3, "status": "registered"},
+    {"mark": "MonsoonFresh", "owner": "RivalCo Consumer Products", "nice_class": 3, "status": "registered"},
+    {"mark": "Sundara", "owner": "Sundara Home Care", "owner_tenant_id": "t_001", "nice_class": 3, "status": "registered"}
+  ]
+}

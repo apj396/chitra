@@ -1,0 +1,5 @@
+{"version": "2.5.0", "released": "2026-07-02",
+ "changelog_url": "https://bhashini.gov.in/changelog",
+ "methods": [{"name": "translate", "fields": [
+   {"name": "source_lang", "type": "string"},
+   {"name": "domain_hint", "type": "string"}]}]}

@@ -1,0 +1,400 @@
+{
+  "$id": "https://chitra.ai/schemas/v1.2/creative_brief.json",
+  "title": "Creative Brief Artifact",
+  "type": "object",
+  "required": [
+    "business_problem",
+    "target_audience",
+    "perception_gap",
+    "insight",
+    "core_message",
+    "tone_spectrum",
+    "mandatories",
+    "prohibitions",
+    "success_metrics",
+    "cultural_overlay"
+  ],
+  "properties": {
+    "business_problem": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 300,
+      "description": "One sentence. No jargon."
+    },
+    "target_audience": {
+      "type": "object",
+      "required": [
+        "demographics",
+        "psychographics",
+        "day_in_the_life"
+      ],
+      "properties": {
+        "demographics": {
+          "type": "object",
+          "required": [
+            "age_range",
+            "income_band",
+            "city_tier"
+          ],
+          "properties": {
+            "age_range": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "integer",
+                  "minimum": 13,
+                  "maximum": 99
+                },
+                "max": {
+                  "type": "integer",
+                  "minimum": 13,
+                  "maximum": 99
+                }
+              }
+            },
+            "income_band": {
+              "enum": [
+                "NCCS_A",
+                "NCCS_B",
+                "NCCS_C",
+                "NCCS_D",
+                "NCCS_E",
+                "premium",
+                "mass_premium",
+                "mass",
+                "value"
+              ]
+            },
+            "city_tier": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "tier_1",
+                  "tier_2",
+                  "tier_3",
+                  "rural",
+                  "metro_only"
+                ]
+              }
+            },
+            "gender": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "female",
+                  "male",
+                  "non_binary",
+                  "all"
+                ]
+              }
+            },
+            "occupation": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "family_stage": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "single",
+                  "married_no_kids",
+                  "parents_young_kids",
+                  "parents_teens",
+                  "empty_nest",
+                  "retired"
+                ]
+              }
+            }
+          }
+        },
+        "psychographics": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "anxieties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "aspirations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "day_in_the_life": {
+          "type": "string",
+          "minLength": 150,
+          "maxLength": 400
+        }
+      }
+    },
+    "perception_gap": {
+      "type": "object",
+      "required": [
+        "current",
+        "desired"
+      ],
+      "properties": {
+        "current": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "desired": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    },
+    "insight": {
+      "type": "string",
+      "minLength": 50,
+      "maxLength": 500,
+      "description": "Non-obvious truth bridging current and desired perception."
+    },
+    "core_message": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 200,
+      "description": "Single-minded proposition. Must pass the Mom Test."
+    },
+    "tone_spectrum": {
+      "type": "object",
+      "required": [
+        "serious_to_playful",
+        "premium_to_accessible",
+        "traditional_to_modern"
+      ],
+      "properties": {
+        "serious_to_playful": {
+          "type": "integer",
+          "minimum": -5,
+          "maximum": 5
+        },
+        "premium_to_accessible": {
+          "type": "integer",
+          "minimum": -5,
+          "maximum": 5
+        },
+        "traditional_to_modern": {
+          "type": "integer",
+          "minimum": -5,
+          "maximum": 5
+        },
+        "additional_axes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "integer",
+                "minimum": -5,
+                "maximum": 5
+              }
+            }
+          }
+        }
+      }
+    },
+    "mandatories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "item",
+          "source"
+        ],
+        "properties": {
+          "item": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "client_brief",
+              "regulatory",
+              "brand_guideline",
+              "legal"
+            ]
+          },
+          "regulation_id": {
+            "type": "string",
+            "description": "If source=regulatory, the rule ID from \u00a7G"
+          }
+        }
+      }
+    },
+    "prohibitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "client_brief",
+              "regulatory",
+              "brand_guideline",
+              "cultural_risk"
+            ]
+          }
+        }
+      }
+    },
+    "success_metrics": {
+      "type": "object",
+      "required": [
+        "business_metrics",
+        "brand_metrics",
+        "attribution_model"
+      ],
+      "properties": {
+        "business_metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "target": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "brand_metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "measurement_method": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "attribution_model": {
+          "enum": [
+            "last_click",
+            "data_driven",
+            "first_click",
+            "linear",
+            "time_decay",
+            "position_based",
+            "mmm"
+          ]
+        },
+        "measurement_window_days": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "cultural_overlay": {
+      "type": "object",
+      "required": [
+        "festivals_in_window",
+        "sports_in_window",
+        "sensitivities"
+      ],
+      "properties": {
+        "festivals_in_window": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "marketing_relevance": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low",
+                  "avoid"
+                ]
+              }
+            }
+          }
+        },
+        "sports_in_window": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event": {
+                "type": "string"
+              },
+              "dates": {
+                "type": "string"
+              },
+              "marketing_relevance": {
+                "enum": [
+                  "high",
+                  "medium",
+                  "low",
+                  "avoid"
+                ]
+              }
+            }
+          }
+        },
+        "sensitivities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "enum": [
+                  "religion",
+                  "caste",
+                  "gender",
+                  "region",
+                  "political",
+                  "language"
+                ]
+              },
+              "note": {
+                "type": "string"
+              },
+              "mitigation": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "open_questions_for_disha": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "_note": "Published rulings and upheld complaints, for the reviewer's brief. Populate from ASCI's complaint outcomes and CCPA orders as they are read. Seeded thin on purpose: an empty precedent list is honest, a fabricated one is not.",
+  "precedent": {
+    "religion": [],
+    "caste": [],
+    "gender": [],
+    "region": [],
+    "political": []
+  }
+}

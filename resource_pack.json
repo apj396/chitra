@@ -1,0 +1,24 @@
+{
+  "_note": "Global Dynamic Resource Pack extract, blocks A.2 and A.3, scoped to the campaign window 15 Sep to 30 Nov 2026. cultural_overlay in the creative_brief schema requires festivals_in_window and sports_in_window, and no agent can know them without this. Diwali is locked to 8 November 2026 per ADR-012.",
+  "as_of": "2026-08-16",
+  "window": {"start": "2026-09-15", "end": "2026-11-30"},
+
+  "A2_festival_calendar": [
+    {"name": "Navratri", "date": "2026-10-11", "ends": "2026-10-19", "marketing_relevance": "high", "regions": ["Maharashtra", "Gujarat", "Karnataka"]},
+    {"name": "Dussehra", "date": "2026-10-20", "marketing_relevance": "high", "regions": ["all"]},
+    {"name": "Karwa Chauth", "date": "2026-10-30", "marketing_relevance": "medium", "regions": ["north"]},
+    {"name": "Dhanteras", "date": "2026-11-06", "marketing_relevance": "high", "regions": ["all"]},
+    {"name": "Diwali (Lakshmi Puja)", "date": "2026-11-08", "marketing_relevance": "high", "regions": ["all"], "note": "Kartik Amavasya, Pradosh Kaal evening window. Five-day window 6 to 10 November."},
+    {"name": "Bhai Dooj", "date": "2026-11-10", "marketing_relevance": "medium", "regions": ["all"]},
+    {"name": "Chhath Puja", "date": "2026-11-15", "marketing_relevance": "medium", "regions": ["Bihar", "UP", "Jharkhand"]}
+  ],
+
+  "A3_sports_calendar": [
+    {"event": "No major cricket tournament in window", "marketing_relevance": "low", "note": "IPL 2026 concluded 31 May 2026; T20 World Cup concluded 8 March 2026."}
+  ],
+
+  "A7_india_notes": {
+    "monsoon_withdrawal": "South-west monsoon typically withdraws from Maharashtra and Karnataka through late September and early October, with retreating-monsoon rain in Tamil Nadu into November.",
+    "relevance": "The campaign window opens during monsoon withdrawal in two of three target states and during north-east monsoon onset in the third."
+  }
+}

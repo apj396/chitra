@@ -1,0 +1,201 @@
+{
+  "$id": "https://chitra.ai/schemas/v1.2/concept_slate.json",
+  "title": "Concept Slate Artifact",
+  "type": "object",
+  "required": [
+    "concepts_approved",
+    "concepts_killed",
+    "pitch_deck_uri"
+  ],
+  "properties": {
+    "concepts_approved": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "proposition",
+          "visual_direction",
+          "verbal_hook",
+          "target_subsegment",
+          "scores",
+          "cultural_risk",
+          "production_complexity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "proposition": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "visual_direction": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "verbal_hook": {
+            "type": "object",
+            "properties": {
+              "primary": {
+                "type": "string"
+              },
+              "alternates": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2
+              }
+            }
+          },
+          "target_subsegment": {
+            "type": "string"
+          },
+          "scores": {
+            "type": "object",
+            "required": [
+              "relevance",
+              "distinctiveness",
+              "resonance",
+              "producibility",
+              "cultural_safety"
+            ],
+            "properties": {
+              "relevance": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "distinctiveness": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "resonance": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "producibility": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "cultural_safety": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 16,
+                "maximum": 25
+              }
+            }
+          },
+          "cultural_risk": {
+            "type": "object",
+            "required": [
+              "level",
+              "register"
+            ],
+            "properties": {
+              "level": {
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              },
+              "register": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "religion",
+                        "caste",
+                        "gender",
+                        "region",
+                        "political",
+                        "language",
+                        "child_safety"
+                      ]
+                    },
+                    "concern": {
+                      "type": "string"
+                    },
+                    "mitigation": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "production_complexity": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "kill_risk_register": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "concepts_killed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "kill_tag",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "kill_tag": {
+            "enum": [
+              "solves_wrong_problem",
+              "indistinguishable_from_recent_category_work",
+              "insight_borrowed_not_earned",
+              "cultural_risk_unmitigable",
+              "production_cost_exceeds_envelope",
+              "requires_unavailable_talent",
+              "regulatory_breach",
+              "ip_conflict",
+              "ranked_out_of_slate"
+            ]
+          },
+          "rationale": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pitch_deck_uri": {
+      "type": "string",
+      "format": "uri"
+    }
+  }
+}

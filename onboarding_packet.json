@@ -1,0 +1,141 @@
+{
+  "_note": "The five fields after approval_chain were added on 16 Aug 2026. Drishti's scaffold forbids inventing audience or performance data, and the creative_brief schema requires both, so a packet without them cannot produce a brief. The agent halts and says so rather than fabricating.",
+  "client_name": "Sundara Home Care",
+  "campaign_id": "camp_2026_monsoon",
+  "concept_id": "concept_monsoon_01",
+  "tenant_id": "t_001",
+  "sector": "fmcg",
+  "product_category": "home_care",
+  "business_problem": "Urban households switched to a cheaper rival during the last two monsoons and did not switch back. Share loss is concentrated in Maharashtra and Karnataka, and recovery has not happened in the dry months either.",
+  "target_audience_description": {
+    "summary": "Tier 1 and tier 2 urban households, primary grocery decision maker",
+    "includes_minors": false,
+    "age_range": {
+      "min": 25,
+      "max": 45
+    },
+    "income_band": "NCCS_B",
+    "city_tier": [
+      "tier_1",
+      "tier_2"
+    ],
+    "gender": [
+      "female",
+      "male"
+    ],
+    "family_stage": [
+      "married_no_kids",
+      "parents_young_kids",
+      "parents_teens"
+    ]
+  },
+  "audience_research": {
+    "source": "Client U&A study, March 2026, n=1,840, Maharashtra and Karnataka",
+    "values": [
+      "thrift",
+      "family care",
+      "keeping up appearances with neighbours"
+    ],
+    "anxieties": [
+      "clothes smelling sour when dried indoors during the monsoon",
+      "being judged for a damp-smelling home when guests visit",
+      "spending more on detergent without visible benefit"
+    ],
+    "aspirations": [
+      "a home that smells clean without extra effort",
+      "not having to plan the week around the weather"
+    ],
+    "observed_behaviour": "During monsoon weeks, washing is moved indoors and hung over chairs and door frames for two to four days. Respondents attribute the resulting smell to the detergent rather than the drying conditions.",
+    "coverage": [
+      "Maharashtra",
+      "Karnataka"
+    ],
+    "_note_coverage": "States the research actually covers. The first real run flagged that geography lists Tamil Nadu while this study did not reach it. Either commission research there, drop it from geography, or accept the gap on the record."
+  },
+  "business_metric_targets": [
+    {
+      "metric": "volume_share",
+      "target": 2.5,
+      "unit": "pp"
+    },
+    {
+      "metric": "repeat_purchase_rate",
+      "target": 6,
+      "unit": "pp"
+    }
+  ],
+  "brand_metric_targets": [
+    {
+      "metric": "consideration",
+      "target": 8,
+      "unit": "pp"
+    },
+    {
+      "metric": "monsoon_performance_association",
+      "target": 12,
+      "unit": "pp"
+    }
+  ],
+  "attribution_model": "data_driven",
+  "brand_guidelines": {
+    "mandatories": [
+      {
+        "item": "Show the product pack in the final three seconds",
+        "source": "client_brief"
+      },
+      {
+        "item": "Retain the existing brand colour palette",
+        "source": "brand_guideline"
+      }
+    ],
+    "prohibitions": [
+      {
+        "item": "No comparative claims naming the rival brand",
+        "source": "regulatory"
+      },
+      {
+        "item": "No depiction of domestic staff doing the washing",
+        "source": "cultural_risk"
+      }
+    ],
+    "_note_source_enums": "mandatories.source allows client_brief, regulatory, brand_guideline, legal. prohibitions.source allows client_brief, regulatory, brand_guideline, cultural_risk. The two enums are asymmetric in creative_brief.json: 'legal' is valid for a mandatory and not for a prohibition, 'cultural_risk' the reverse. Drishti flagged this on 18 Aug 2026 after mapping 'legal' to 'regulatory' to pass validation."
+  },
+  "geography": [
+    "Maharashtra",
+    "Karnataka"
+  ],
+  "budget_inr": 42000000,
+  "timeline": {
+    "launch": "2026-09-15",
+    "end": "2026-11-30"
+  },
+  "approval_chain": [
+    "brand_manager",
+    "marketing_head"
+  ],
+  "targeting_bases": [
+    "geography",
+    "household_stage"
+  ],
+  "cultural_reviewer": null,
+  "competitive_exclusions": [],
+  "_note_competitor_archive": "Populate with 24 months of category work to enable the derivative-risk kill check. Empty means that check reports unverifiable.",
+  "competitor_archive": [],
+  "production_cost_bands": {
+    "low": [
+      800000,
+      2500000
+    ],
+    "medium": [
+      2500000,
+      9000000
+    ],
+    "high": [
+      9000000,
+      30000000
+    ]
+  },
+  "_note_geography": "Tamil Nadu removed on 16 Aug 2026 per ADR-020. The audience research covers Maharashtra and Karnataka only, and the platform denies execution in a region the research does not substantiate.",
+  "research_coverage_waivers": [],
+  "_note_research_coverage_waivers": "To run in an uncovered region anyway, add {\"region\": \"Tamil Nadu\", \"approved_by\": \"<name>\", \"approved_on\": \"2026-08-16\", \"rationale\": \"<why>\"}. The block lifts only for a waiver that names a person and a date. A waiver without a name is a compromise, not a decision."
+}

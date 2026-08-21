@@ -1,0 +1,35 @@
+{
+  "_note": "Curator-maintained markers per axis, per ADR-001. These are prompts for a human reviewer, not rules. They are assembled into the reviewer's brief and never evaluated automatically.",
+  "register": {
+    "religion": [
+      "A deity, symbol or scripture used as a product mascot or in a discount frame",
+      "A festival used as a sales hook without acknowledging its observance",
+      "A place of worship as set dressing for a commercial transaction",
+      "One tradition's practice shown as quaint, exotic or superstitious"
+    ],
+    "caste": [
+      "An occupation shown as inherited or as a marker of the family's standing",
+      "Domestic or manual labour shown without the worker as a person",
+      "Skin tone correlated with the role a character occupies",
+      "A surname or community name used to signal class"
+    ],
+    "gender": [
+      "Household work shown as belonging to one gender by default",
+      "A woman's competence framed through approval from a mother-in-law or husband",
+      "Body size, skin tone or age used as the setup for a joke",
+      "A man shown as incompetent at domestic tasks as the comic premise"
+    ],
+    "region": [
+      "An accent used as the punchline rather than as speech",
+      "A small town or village shown as backward against a metro",
+      "Northeastern, southern or eastern Indian features used as visual shorthand",
+      "One language treated as the default and others as local colour"
+    ],
+    "political": [
+      "National symbols, the flag or the armed forces used for a commercial claim",
+      "A position taken on a contested public question",
+      "A living political figure referenced, favourably or otherwise",
+      "A government scheme implied as endorsement"
+    ]
+  }
+}

@@ -1,0 +1,895 @@
+{
+  "registry_version": "1.3.3",
+  "rules": [
+    {
+      "id": "ASCI-DISC-001",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Influencer Advertising Guidelines 2026, disclosure sufficiency and placement",
+      "applies_to": [
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "post.paid_partnership == true OR post.material_connection == true",
+      "check": "post.disclosure_tag in ['#Ad','#Advertisement','#Sponsored','#Promotion','#Paid','#PaidPartnership'] AND post.disclosure_position == 'first_line' AND post.disclosure_in_trailing_hashtag_cluster == false, OR post.platform_native_label == 'paid_partnership_with",
+      "severity": "block",
+      "auto_fix_available": true,
+      "human_review_on_fail": false,
+      "failure_message": "Paid partnership disclosure missing, ambiguous, or not in the first line.",
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-DISC-002",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Influencer Advertising Guidelines 2026, video and ephemeral disclosure duration",
+      "applies_to": [
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.is_video == true AND artifact.paid_partnership == true",
+      "check": "if artifact.format_is_ephemeral: artifact.disclosure_visible_throughout == true; elif artifact.duration_sec <= 15: artifact.disclosure_visible_duration_sec >= 3; elif artifact.duration_sec <= 120: artifact.disclosure_visible_duration_sec >= artifact.duration_sec / 3; else: artifact.disclosure_visible_throughout == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-DISC-003",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Influencer Advertising Guidelines 2026, verbal disclosure requirement",
+      "applies_to": [
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.paid_partnership == true AND (artifact.is_video == true OR artifact.is_audio == true)",
+      "check": "if artifact.is_video: artifact.verbal_disclosure_present == true AND artifact.verbal_disclosure_start_sec <= 10; if artifact.is_audio: artifact.verbal_disclosure_at_segment_start == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "failure_message": "Verbal disclosure required within the first 10 seconds of video, or at the start of an audio brand segment. A text overlay alone is not sufficient.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-AI-001",
+      "source": [
+        "ASCI",
+        "IT_RULES"
+      ],
+      "citation": "ASCI Draft Guidelines for Responsible Labelling of AI-Generated Content in Advertising, 8 May 2026, read with IT (Intermediary Guidelines and Digital Media Ethics Code) Amendment Rules 2026",
+      "applies_to": [
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.ai_risk_tier in ['medium','high']",
+      "check": "artifact.ai_risk_tier != 'high' AND artifact.ai_label_present == true AND artifact.ai_label_accurately_describes_use == true AND artifact.ai_label_meets_disclaimer_prominence == true AND (artifact.is_video == false OR (artifact.ai_label_within_first_5_sec == true AND artifact.ai_label_at_end == true))",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "High-risk AI use is prohibited and labelling does not cure it. Medium-risk use requires a prominent, accurate label.",
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-AI-002",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI restrictions on AI personas addressing children, April 2026",
+      "applies_to": [
+        "asset_registry",
+        "motion_asset_registry",
+        "media_plan",
+        "social_post"
+      ],
+      "applies_when": "artifact.uses_ai_persona == true AND artifact.audience_includes_under_12 == true",
+      "check": "artifact.product_category not in ['junk_food','high_sugar_beverage','weight_loss']",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-BFSI-001",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Influencer Guidelines Addendum 2, 7 April 2025, BFSI qualification disclosure",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.sector == 'BFSI' AND artifact.contains_technical_advice == true",
+      "check": "credential_registry.lookup(artifact.influencer_qualification_credential_id).valid == true AND the qualification appears in the artifact copy",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-HEALTH-001",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Influencer Guidelines Addendum 2, 7 April 2025, health and nutrition qualification disclosure",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.sector in ['healthcare','nutrition'] AND artifact.contains_technical_advice == true",
+      "check": "credential_registry.lookup(artifact.influencer_qualification_credential_id).valid == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-DARK-001",
+      "source": [
+        "CCPA_DARK",
+        "ASCI"
+      ],
+      "citation": "CCPA Guidelines on Dark Patterns, November 2023, read with ASCI 2026 enforcement focus",
+      "applies_to": [
+        "asset_registry",
+        "media_plan",
+        "social_post"
+      ],
+      "applies_when": "artifact.offer_mechanics or artifact.ui_elements intersects [countdown_timer, stock_indicator, scarcity_badge, subscription_flow, checkout_path, free_trial_auto_renew, drip_pricing, consent_gate, unsubscribe_flow, pre_ticked_option, urgency_banner] OR artifact.has_commercial_flow == true OR artifact.dark_patterns_present is non-empty",
+      "check": "artifact carries no pattern from the CCPA dark-pattern list and disclosure_legible == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "3.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ASCI-GREENWASH-001",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Guidelines for Advertising of Environmental and Sustainability Claims",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.contains_environmental_claim == true",
+      "check": "artifact.claim_substantiated_with_third_party_certification == true OR artifact.claim_quantified_with_specific_metric == true OR artifact.claim_qualified_with_scope_disclosure == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-CONSENT-001",
+      "source": [
+        "DPDP"
+      ],
+      "citation": "DPDP Act 2023 read with DPDP Rules 2025, notified 13 November 2025",
+      "applies_to": [
+        "media_plan",
+        "daily_optimization_log",
+        "social_post"
+      ],
+      "applies_when": "artifact.uses_custom_audience == true OR artifact.uses_crm_upload == true OR artifact.uses_whatsapp_marketing == true",
+      "check": "artifact.consent_artifact_id present AND consent_vault.lookup(artifact.consent_artifact_id).status == 'valid' AND consent_vault.lookup(artifact.consent_artifact_id).purpose matches artifact.processing_purpose",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-CHILDREN-001",
+      "source": [
+        "DPDP"
+      ],
+      "citation": "DPDP Act 2023 section 9, processing of personal data of children",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "media_plan",
+        "social_post"
+      ],
+      "applies_when": "artifact.target_audience.includes_minors == true",
+      "check": "artifact.targeting_bases and artifact.audience_signals contain no behavioural signal AND consent_vault.lookup(artifact.parental_consent_artifact_id).consent_type == 'verifiable_parental' AND status == 'valid",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-RETENTION-001",
+      "source": [
+        "DPDP"
+      ],
+      "citation": "DPDP Rules 2025, Seventh Schedule, retention ceiling and processing-log floor",
+      "applies_to": [
+        "performance_report",
+        "learnings_dossier"
+      ],
+      "applies_when": "true",
+      "check": "artifact.data_retention_period_days <= tenant.dpdp_retention_policy_days AND artifact.processing_log_retention_days >= 365 AND no free-text evidence field contains an individual identifier marker (customer_id, user_id, email, phone, device_id, aadhaar)",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "3.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-BREACH-NOTIFY-001",
+      "source": [
+        "DPDP"
+      ],
+      "citation": "DPDP Rules 2025, breach notification to the Data Protection Board and affected Data Principals",
+      "applies_to": [
+        "incident_record"
+      ],
+      "rule_class": "process",
+      "applies_when": "incident.classified_as_breach == true",
+      "check": "notification.to_dpbi_sent == true AND notification.to_affected_data_principals_sent == true AND notification.elapsed_hours <= 72",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-SENSITIVE-TARGETING-001",
+      "source": [
+        "PLATFORM_TOS",
+        "CHITRA_INTERNAL",
+        "CONSTITUTION"
+      ],
+      "citation": "Meta and Google prohibited targeting-attribute policies, read with CHITRA rules-engine integrity policy ADR-003 and constitutional non-discrimination principles",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "media_plan",
+        "daily_optimization_log",
+        "social_post"
+      ],
+      "applies_when": "true",
+      "check": "artifact.targeting_bases excludes religion_alone, caste, political_affiliation, sexual_orientation, health_condition and trade_union_membership, with no brand-declared exception",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "hitl_queue": "dpo",
+      "failure_message": "Targeting on a protected attribute. Reach the audience through content and context instead.",
+      "version": "3.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-ERASURE-001",
+      "source": [
+        "DPDP"
+      ],
+      "citation": "DPDP Act 2023, right to erasure, read with DPDP Rules 2025",
+      "applies_to": [
+        "erasure_request"
+      ],
+      "rule_class": "process",
+      "applies_when": "request.erasure_request == true",
+      "check": "request.data_principal_authorization present AND request.reversal_window_bypassed == true AND request.completed_within_hours <= 72 AND request.cascade_to_external_platforms_confirmed == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-XBORDER-001",
+      "source": [
+        "DPDP",
+        "MEITY"
+      ],
+      "citation": "DPDP Act 2023 section 16, restriction on transfer outside India, read with MeitY country notifications",
+      "applies_to": [
+        "asset_registry",
+        "media_plan"
+      ],
+      "applies_when": "artifact.involves_cross_border_transfer == true",
+      "check": "artifact.destination_country not in meity.restricted_country_list AND artifact.transfer_basis_documented == true",
+      "severity": "warn",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "Cross-border transfer flagged. Review against the current MeitY country list before Phase 3 enforcement on 13 May 2027.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DPDP-GRIEVANCE-001",
+      "source": [
+        "DPDP"
+      ],
+      "citation": "DPDP Rules 2025, grievance redressal timelines",
+      "applies_to": [
+        "grievance_record"
+      ],
+      "rule_class": "process",
+      "applies_when": "grievance.received == true",
+      "check": "grievance.resolved_within_days <= 90 AND grievance.acknowledgement_sent == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "DMRA-001",
+      "source": [
+        "DMRA"
+      ],
+      "citation": "Drugs and Magic Remedies (Objectionable Advertisements) Act, 1954, Schedule and section 3",
+      "applies_to": [
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.contains_health_claim == true",
+      "check": "no Schedule condition or section 3 prohibition appears in the declared claim list or in the artifact copy",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "shadow_mode": true,
+      "failure_message": "Claim addresses a condition in the DMRA Schedule.",
+      "version": "3.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "RBI-BFSI-001",
+      "source": [
+        "RBI"
+      ],
+      "citation": "RBI guidelines on advertising of banking, lending and credit products",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category == 'banking_lending_credit",
+      "check": "artifact copy contains a rate figure alongside APR or interest wording AND a terms-apply line AND no guaranteed-returns phrase",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "SEBI-MUTUAL-FUND-001",
+      "source": [
+        "SEBI"
+      ],
+      "citation": "SEBI Master Circular for Mutual Funds, advertisement code",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category == 'mutual_funds_securities",
+      "check": "artifact copy contains the statutory market-risk sentence AND if video, disclaimer visible at least 5s with voiceover",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "IRDAI-INSURANCE-001",
+      "source": [
+        "IRDAI"
+      ],
+      "citation": "IRDAI (Insurance Advertisements and Disclosure) Regulations",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category == 'insurance",
+      "check": "artifact copy contains an IRDAI registration number AND a policy terms disclosure AND no misleading returns phrase",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "GAMING-RMG-001",
+      "source": [
+        "ONLINE_GAMING_ACT"
+      ],
+      "citation": "Promotion and Regulation of Online Gaming Act, 2025 (Act 32 of 2025), sections prohibiting advertisement of online money games, in force 1 October 2025",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "media_plan",
+        "daily_optimization_log",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "artifact.involves_online_money_game == true OR artifact.product_category in ['fantasy_sports_real_money','rummy_real_money','poker_real_money','online_real_money_gaming','gambling_gaming']",
+      "check": "false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "Advertising online money games is prohibited under Act 32 of 2025. Direct and indirect promotion both attract imprisonment up to 2 years and a fine up to Rs 50 lakh. E-sports recognised under the National Sports Governance Act 2025 and online social games without stakes are outside this prohibition and must be declared under esports_recognised or online_social_gaming_no_stakes.",
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "TOBACCO-001",
+      "source": [
+        "COTPA"
+      ],
+      "citation": "Cigarettes and Other Tobacco Products Act, 2003",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "media_plan",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category in ['tobacco','cigarettes','tobacco_surrogate']",
+      "check": "false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "Direct tobacco advertising is banned in India and surrogate advertising is heavily scrutinised.",
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "ALCOHOL-SURROGATE-001",
+      "source": [
+        "CCPA_DARK",
+        "ASCI",
+        "EXCISE"
+      ],
+      "citation": "CCPA Guidelines for Prevention of Misleading Advertisements 2022 read with the ASCI Guidelines for Qualification of Brand Extension, as updated 14 December 2023",
+      "applies_to": [
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "media_plan",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category in alcohol or alcohol_surrogate",
+      "check": "no direct promotion, AND a ca_attestation_id resolving as a valid brand-extension certificate in the credential registry, AND no alcohol consumption imagery",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "Alcohol-adjacent advertising is blocked by default. Only a genuine brand extension certified by an independent CA firm against the ASCI thresholds may proceed.",
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "REAL-ESTATE-RERA-001",
+      "source": [
+        "RERA"
+      ],
+      "citation": "Real Estate (Regulation and Development) Act, 2016, section 11 advertisement disclosure",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category == 'real_estate",
+      "check": "artifact.contains_rera_registration_number == true AND artifact.contains_project_details_disclosure == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "EDTECH-NEP-001",
+      "source": [
+        "ASCI"
+      ],
+      "citation": "ASCI Guidelines for Advertising of Educational Institutions and Programs",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category == 'edtech",
+      "check": "artifact.guarantees_specific_exam_rank_or_marks == false AND artifact.uses_fear_of_failure_appeals_to_parents == false AND artifact.uses_unverified_testimonials_of_minors == false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "HEALTHCARE-CLAIM-SUB-001",
+      "source": [
+        "CPA",
+        "MOHFW"
+      ],
+      "citation": "Consumer Protection Act 2019 misleading advertisement provisions read with MoHFW advertising restrictions",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category in ['healthcare','medical_device','supplements','nutraceutical']",
+      "check": "artifact.health_claims_have_evidence_id == true AND artifact.uses_doctor_endorsement_for_drug_without_DGCI_approval == false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "IP-TRADEMARK-001",
+      "source": [
+        "TRADEMARKS_ACT"
+      ],
+      "citation": "Trade Marks Act, 1999, sections 29 and 30 on infringement and comparative use",
+      "applies_to": [
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "true",
+      "check": "legal_precheck.trademark_clearance_passed == true AND (artifact.references_competitor_mark == false OR artifact.comparative_claim_substantiated == true)",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "IP-COPYRIGHT-001",
+      "source": [
+        "COPYRIGHT_ACT"
+      ],
+      "citation": "Copyright Act, 1957, licence documentation for music, stock imagery and likeness",
+      "applies_to": [
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.uses_music OR artifact.uses_stock_imagery OR artifact.uses_celebrity_likeness",
+      "check": "every declared use has a corresponding documented licence or contract",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "IP-AI-CONSENT-001",
+      "source": [
+        "IT_RULES"
+      ],
+      "citation": "IT (Intermediary Guidelines and Digital Media Ethics Code) Amendment Rules, 2026, amended 10 February 2026, synthetic media provisions",
+      "applies_to": [
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.uses_voice_clone == true OR artifact.uses_face_swap == true OR artifact.uses_likeness_synthesis == true",
+      "check": "artifact.subject_consent_documented == true AND artifact.deepfake_label_present == true AND artifact.content_credentials_attached == true AND artifact.depicts_fabricated_endorsement == false AND artifact.depicts_fake_authority_figure == false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "Fabricated endorsements, unauthorised likenesses and fake authority figures are prohibited outright. Consent and labelling do not cure them.",
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "PLATFORM-TOS-WHATSAPP-001",
+      "source": [
+        "PLATFORM_TOS"
+      ],
+      "citation": "WhatsApp Business Platform Policy, marketing template and opt-in requirements",
+      "applies_to": [
+        "media_plan",
+        "daily_optimization_log",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "artifact.channel == 'whatsapp",
+      "check": "consent_vault.lookup(artifact.opt_in_consent_artifact_id).status == 'valid' AND channel == 'whatsapp' AND artifact.template_pre_approved == true AND artifact.respects_24h_utility_window == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "PLATFORM-TOS-META-SPECIAL-CAT-001",
+      "source": [
+        "PLATFORM_TOS"
+      ],
+      "citation": "Meta special ad categories policy",
+      "applies_to": [
+        "media_plan",
+        "daily_optimization_log",
+        "social_post"
+      ],
+      "applies_when": "artifact.product_category in ['credit','employment','housing','elections_politics']",
+      "check": "artifact.special_ad_category_declared_in_meta == true",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "PLATFORM-TOS-META-PLACEMENT-001",
+      "source": [
+        "PLATFORM_TOS"
+      ],
+      "citation": "Meta Graph and Marketing API v26.0 changelog, 29 July 2026, placement removals",
+      "applies_to": [
+        "asset_registry",
+        "motion_asset_registry",
+        "media_plan"
+      ],
+      "applies_when": "artifact.platform_family == 'meta",
+      "check": "artifact.placements disjoint from ['instagram_explore_feed','messenger_stories']",
+      "severity": "block",
+      "auto_fix_available": true,
+      "human_review_on_fail": false,
+      "failure_message": "Instagram Explore Feed returns an API error and Messenger Stories is silently stripped from v26.0. Silent stripping means the campaign runs with targeting the media plan does not describe.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CULTURAL-RELIGION-001",
+      "source": [
+        "CULTURAL_REGISTER"
+      ],
+      "citation": "CHITRA cultural risk register, religious representation markers, curated per v1.2.2 section 9.1",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "artifact.references_religious_symbol == true OR artifact.references_religious_practice == true",
+      "check": "cultural_risk_audit.completed == true AND artifact.does_not_mock_religion == true",
+      "severity": "conditional",
+      "escalation_threshold": "cultural_risk_audit.level >= 'medium",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CULTURAL-CASTE-001",
+      "source": [
+        "CULTURAL_REGISTER",
+        "CONSTITUTION"
+      ],
+      "citation": "CHITRA cultural risk register read with constitutional non-discrimination principles",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "true",
+      "check": "artifact.uses_caste_stereotypes == false AND artifact.implies_caste_hierarchy == false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CULTURAL-GENDER-001",
+      "source": [
+        "CULTURAL_REGISTER"
+      ],
+      "citation": "CHITRA cultural risk register, gender representation markers",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "true",
+      "check": "artifact.reinforces_harmful_gender_stereotypes == false AND artifact.uses_misogyny_for_humor == false AND artifact.uses_body_shaming == false",
+      "severity": "conditional",
+      "escalation_threshold": "cultural_risk_audit.level >= 'medium",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CULTURAL-REGION-001",
+      "source": [
+        "CULTURAL_REGISTER"
+      ],
+      "citation": "CHITRA cultural risk register, regional and linguistic representation markers",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "true",
+      "check": "artifact.mocks_regional_accent_for_humor == false AND artifact.implies_regional_hierarchy == false",
+      "severity": "conditional",
+      "escalation_threshold": "cultural_risk_audit.level >= 'high",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "2.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CULTURAL-POLITICAL-001",
+      "source": [
+        "CULTURAL_REGISTER"
+      ],
+      "citation": "CHITRA cultural risk register, political neutrality markers",
+      "applies_to": [
+        "concept_slate",
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "content_calendar",
+        "social_post"
+      ],
+      "applies_when": "true",
+      "check": "artifact.takes_partisan_political_position_unless_brand_is_political == false AND artifact.references_living_political_figure_unflatteringly == false",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CHITRA-TENANT-ISOLATION-001",
+      "source": [
+        "CHITRA_INTERNAL"
+      ],
+      "citation": "CHITRA v1.2.3 section 6, cross-tenant exclusion enforcement",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "performance_report",
+        "learnings_dossier"
+      ],
+      "applies_when": "true",
+      "check": "artifact.referenced_tenant_ids subset of [context.tenant_id] AND artifact.competitor_archive_references respect tenant.competitive_exclusions",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "version": "1.1.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "IP-COPYRIGHT-002",
+      "source": [
+        "COPYRIGHT_ACT"
+      ],
+      "citation": "Copyright Act, 1957, territorial scope of music licensing",
+      "applies_to": [
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact.music_license_territory is present and not 'global",
+      "check": "no placement in the plan reaches beyond the licensed territory",
+      "severity": "warn",
+      "auto_fix_available": false,
+      "human_review_on_fail": false,
+      "failure_message": "Music licensed for a single territory but placed on globally reaching surfaces. Verify territory clearance.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CHITRA-HITL-BUDGET-001",
+      "source": [
+        "CHITRA_INTERNAL"
+      ],
+      "citation": "CHITRA v1.2 section K, human-in-the-loop gates, budget authority",
+      "applies_to": [
+        "daily_optimization_log"
+      ],
+      "applies_when": "any action in artifact.actions_taken carries a budget_shift_percent",
+      "check": "every budget shift above tenant.hitl_budget_shift_threshold_pct carries hitl_triggered and a human_approver_id",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "failure_message": "Budget shift recorded without HITL approval. Revert or mark pending until approved.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "IP-REAL-PERSON-LIKENESS-001",
+      "source": [
+        "CHITRA_INTERNAL",
+        "CONSTITUTION"
+      ],
+      "citation": "Personality and publicity rights as recognised by Indian courts, read with CHITRA legal-liability gating policy ADR-018",
+      "applies_to": [
+        "concept_bible",
+        "asset_registry",
+        "motion_asset_registry",
+        "social_post"
+      ],
+      "applies_when": "artifact declares any identifiable real person",
+      "check": "every identifiable real person carries a release_document_uri, unless a public figure depicted in editorial context",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "hitl_queue": "legal",
+      "failure_message": "Identifiable real person depicted without a signed release.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-12"
+    },
+    {
+      "id": "CHITRA-RESEARCH-COVERAGE-001",
+      "source": [
+        "CHITRA_INTERNAL"
+      ],
+      "citation": "CHITRA research substantiation policy ADR-020, 16 August 2026",
+      "applies_to": [
+        "creative_brief",
+        "concept_slate",
+        "concept_bible",
+        "media_plan",
+        "content_calendar"
+      ],
+      "applies_when": "campaign.geography is present",
+      "check": "every region in campaign.geography appears in campaign.research_coverage, or carries a waiver in campaign.research_coverage_waivers naming an approver",
+      "severity": "block",
+      "auto_fix_available": false,
+      "human_review_on_fail": true,
+      "hitl_queue": "brand_owner",
+      "failure_message": "Campaign geography includes a region the audience research does not cover. Territories for that market would rest on insight never tested there. Remove the region, extend the research, or record a waiver naming the approver.",
+      "version": "1.0.0",
+      "effective_from": "2026-08-16"
+    }
+  ]
+}

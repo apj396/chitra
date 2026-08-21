@@ -1,0 +1,135 @@
+{
+  "$id": "https://chitra.ai/schemas/v1.3.2/rule_object.json",
+  "title": "Compliance Rule Object",
+  "version": "2.0.0",
+  "supersedes": "https://chitra.ai/schemas/v1.2/rule_object.json",
+  "type": "object",
+  "required": [
+    "id",
+    "source",
+    "citation",
+    "applies_to",
+    "severity",
+    "auto_fix_available",
+    "human_review_on_fail"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*(-[A-Z0-9]+)*-[0-9]{3}$",
+      "description": "One or more uppercase segments, then a three-digit ordinal. Admits DMRA-001 and PLATFORM-TOS-META-SPECIAL-CAT-001 alike."
+    },
+    "source": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "ASCI",
+          "DPDP",
+          "IT_RULES",
+          "MEITY",
+          "CPA",
+          "CCPA_DARK",
+          "DMRA",
+          "RBI",
+          "SEBI",
+          "IRDAI",
+          "TRAI",
+          "MOHFW",
+          "PLATFORM_TOS",
+          "RERA",
+          "COTPA",
+          "EXCISE",
+          "COPYRIGHT_ACT",
+          "TRADEMARKS_ACT",
+          "ONLINE_GAMING_ACT",
+          "CONSTITUTION",
+          "CULTURAL_REGISTER",
+          "CHITRA_INTERNAL"
+        ]
+      },
+      "description": "Authorities, not instruments. The instrument goes in citation."
+    },
+    "citation": {
+      "type": "string",
+      "minLength": 8
+    },
+    "applies_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rule_class": {
+      "enum": [
+        "artifact",
+        "process",
+        "tool_call"
+      ],
+      "default": "artifact"
+    },
+    "applies_when": {
+      "type": "string",
+      "description": "Predicate as evaluable expression"
+    },
+    "check": {
+      "type": "string",
+      "description": "Check logic as evaluable expression"
+    },
+    "severity": {
+      "enum": [
+        "block",
+        "warn",
+        "info",
+        "conditional"
+      ]
+    },
+    "escalation_threshold": {
+      "type": "string",
+      "description": "Required when severity is conditional. Expression resolving to the risk level at or above which the rule blocks."
+    },
+    "auto_fix_available": {
+      "type": "boolean"
+    },
+    "human_review_on_fail": {
+      "type": "boolean"
+    },
+    "failure_message": {
+      "type": "string"
+    },
+    "shadow_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "version": {
+      "type": "string"
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "sunsets_on": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "severity": {
+            "const": "conditional"
+          }
+        },
+        "required": [
+          "severity"
+        ]
+      },
+      "then": {
+        "required": [
+          "escalation_threshold"
+        ]
+      }
+    }
+  ]
+}

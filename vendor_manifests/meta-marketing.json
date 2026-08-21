@@ -1,0 +1,31 @@
+{
+  "version": "v26.0",
+  "released": "2026-07-29",
+  "changelog_url": "https://developers.facebook.com/docs/graph-api/changelog",
+  "auth_scopes": ["ads_management", "ads_read", "business_management"],
+  "methods": [
+    {"name": "campaign.create",
+     "renamed_fields": [{"from": "dma_codes", "to": "comscore_market_codes"}],
+     "enforcement_date_all_versions": "2026-06-22",
+     "fields": [
+       {"name": "objective", "type": "string", "required": true},
+       {"name": "special_ad_categories", "type": "array"},
+       {"name": "comscore_market_codes", "type": "array"}]},
+    {"name": "adset.create", "fields": [
+      {"name": "placements", "type": "array",
+       "silent_failure_mode": true,
+       "enforcement_date_all_versions": "2026-10-27",
+       "enum": ["instagram_reel", "instagram_story", "facebook_feed",
+                "facebook_reel", "whatsapp_status"]},
+      {"name": "targeting", "type": "object"}]},
+    {"name": "insights.read", "fields": [
+      {"name": "metrics", "type": "array",
+       "enum": ["media_views", "media_viewers", "spend", "clicks"]}]}
+  ],
+  "deprecations": [
+    {"summary": "v25.0 sunset announced; advertisers must migrate to v26.0",
+     "sunset_date": "2027-02-15",
+     "enforcement_date_all_versions": "2026-10-27",
+     "affected_methods": ["campaign.create", "adset.create"]}
+  ]
+}

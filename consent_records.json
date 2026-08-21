@@ -1,0 +1,61 @@
+{
+  "_note": "Consent of record. Identifiers are stored as SHA-256 hashes only: a consent vault holding raw phone numbers is itself the breach it exists to prevent, and DPDP does not exempt the compliance system from DPDP. Seeded with examples.",
+  "consents": {
+    "EXAMPLE-CONSENT-0001": {
+      "principal_hash": "f3a47ce5ce3d4ca8ad15b0c9c9f2b1e7a5d8c3b6e9f2a4d7c0b3e6f9a2d5c8b1",
+      "status": "valid",
+      "purpose": "retargeting",
+      "channel": "meta",
+      "consent_type": "self",
+      "age_verified": true,
+      "principal_is_minor": false,
+      "notice_version": "sundara-notice-v3-2026-03",
+      "consent_manager_id": "CM/2026/0087",
+      "collected_at": "2026-03-14T09:20:00",
+      "expires_at": "2027-03-14T09:20:00"
+    },
+    "EXAMPLE-CONSENT-0002": {
+      "principal_hash": "b2c9e4f7a1d8c3b6e9f2a5d8c1b4e7f0a3d6c9b2e5f8a1d4c7b0e3f6a9d2c5b8",
+      "status": "valid",
+      "purpose": "marketing",
+      "channel": "whatsapp",
+      "consent_type": "self",
+      "age_verified": true,
+      "principal_is_minor": false,
+      "notice_version": "sundara-notice-v3-2026-03",
+      "collected_at": "2026-04-02T11:05:00",
+      "expires_at": "2027-04-02T11:05:00"
+    },
+    "EXAMPLE-CONSENT-0003": {
+      "principal_hash": "d4e1f8a5c2b9e6f3a0d7c4b1e8f5a2d9c6b3e0f7a4d1c8b5e2f9a6d3c0b7e4f1",
+      "status": "valid",
+      "purpose": "marketing",
+      "channel": "meta",
+      "consent_type": "verifiable_parental",
+      "age_verified": true,
+      "principal_is_minor": true,
+      "guardian_verification_method": "DigiLocker parent-child linkage",
+      "notice_version": "sundara-notice-v3-2026-03",
+      "collected_at": "2026-05-19T16:40:00",
+      "expires_at": "2027-05-19T16:40:00"
+    },
+    "EXAMPLE-CONSENT-0004-WITHDRAWN": {
+      "principal_hash": "a7b4c1d8e5f2a9b6c3d0e7f4a1b8c5d2e9f6a3b0c7d4e1f8a5b2c9d6e3f0a7b4",
+      "status": "withdrawn",
+      "purpose": "retargeting",
+      "channel": "meta",
+      "consent_type": "self",
+      "withdrawn_at": "2026-07-11T08:00:00",
+      "withdrawal_reason": "data principal withdrawal via consent manager"
+    },
+    "EXAMPLE-CONSENT-0005-EXPIRED": {
+      "principal_hash": "c8d5e2f9a6b3c0d7e4f1a8b5c2d9e6f3a0b7c4d1e8f5a2b9c6d3e0f7a4b1c8d5",
+      "status": "valid",
+      "purpose": "retargeting",
+      "channel": "meta",
+      "consent_type": "self",
+      "collected_at": "2025-01-10T10:00:00",
+      "expires_at": "2026-01-10T10:00:00"
+    }
+  }
+}

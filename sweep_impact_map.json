@@ -1,0 +1,16 @@
+{
+  "note": "Which agent calls which vendor method, and which rules reference it. Used to scope degraded mode and curator tickets.",
+  "agents": {
+    "meta-marketing.campaign.create": ["lakshya"],
+    "meta-marketing.adset.create": ["lakshya", "gati"],
+    "meta-marketing.insights.read": ["pramaan"],
+    "google-ads-mcp.asset.text_guidelines.set": ["lakshya", "vaani"],
+    "google-ads-mcp.campaign.create": ["lakshya"],
+    "bhashini-mcp.translate": ["vaani", "lehar"]
+  },
+  "rules": {
+    "meta-marketing.adset.create": ["PLATFORM-TOS-META-PLACEMENT-001"],
+    "meta-marketing.campaign.create": ["PLATFORM-TOS-META-SPECIAL-CAT-001"],
+    "google-ads-mcp.asset.text_guidelines.set": ["ASCI-AI-001"]
+  }
+}

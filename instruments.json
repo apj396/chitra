@@ -1,0 +1,76 @@
+{
+  "register_version": "1.0.0",
+  "last_reviewed": "2026-08-12",
+  "owner_role": "resource_curator",
+  "review_cadence": "monthly + on-notification, per v1.1 §A.1",
+  "note": "Data file for check 4 of chitra_conformance.py. A citation matching a non-current entry raises a finding. Add an entry the day an instrument is amended, superseded or repealed; do not edit the checker.",
+  "instruments": [
+    {
+      "name": "IT Rules 2023 amendment — online real-money gaming (self-regulatory body regime)",
+      "match": "IT[ _]Rules[ _]2023[ _]amendment.*real.?money|self-regulatory body.*gaming",
+      "status": "superseded",
+      "superseded_by": "Promotion and Regulation of Online Gaming Act, 2025 (Act 32 of 2025)",
+      "effective": "2025-10-01",
+      "note": "The SRB self-regulatory mechanism was abandoned. Advertising online money games is now prohibited outright, punishable by imprisonment up to 2 years and a fine up to Rs 50 lakh. Any rule permitting real-money gaming advertising subject to conditions is unlawful."
+    },
+    {
+      "name": "ASCI AI Influencer Disclosure (fixed-label formulation)",
+      "match": "ASCI AI Influencer Disclosure|Virtual Persona",
+      "status": "under_revision",
+      "superseded_by": "ASCI Draft Guidelines for Responsible Labelling of AI-Generated Content in Advertising (8 May 2026), aligned to IT (Intermediary Guidelines and Digital Media Ethics Code) Amendment Rules 2026",
+      "effective": "2026-06-13",
+      "note": "ASCI has not mandated a single label format. A closed label enum over-blocks compliant work. The framework is risk-tiered and high-risk uses are prohibited outright, so a label does not cure them. Track the final text published after the 13 June 2026 consultation close."
+    },
+    {
+      "name": "ASCI Influencer Guidelines Addendum 2 (7 April 2025) — disclosure sufficiency",
+      "match": "Addendum 2",
+      "status": "amended",
+      "superseded_by": "ASCI Influencer Advertising Guidelines 2026",
+      "effective": "2026-01-01",
+      "note": "The 2026 update prohibits #collab or #partnership without #Ad, prohibits disclosures buried in hashtag clusters, requires verbal disclosure within the first 10 seconds of video and at the start of an audio brand segment, and requires full-duration disclosure on ephemeral formats. Monitoring runs through the National Advertising Monitoring Service. Addendum 2 remains valid for BFSI and health qualification disclosure. Rules relying only on the qualification-disclosure portion are exempt via exempt_ids.",
+      "exempt_ids": [
+        "ASCI-BFSI-001",
+        "ASCI-HEALTH-001"
+      ]
+    },
+    {
+      "name": "IT Rules — deepfake and synthetic media (unnamed formulation)",
+      "match": "emerging deepfake regulation",
+      "status": "superseded",
+      "superseded_by": "IT (Intermediary Guidelines and Digital Media Ethics Code) Amendment Rules, 2026 (amended 10 February 2026)",
+      "effective": "2026-02-10",
+      "note": "A named instrument now exists. Citations must name it rather than gesturing at emerging regulation."
+    },
+    {
+      "name": "DPDP Rules 2025 — notification and compliance dates",
+      "match": "notified 14 Nov|14 November 2025|14 May 2027",
+      "status": "date_error",
+      "superseded_by": "DPDP Rules notified 13 November 2025; Phase 2 (penalties, Consent Manager registration) 13 November 2026; Phase 3 (full compliance) 13 May 2027",
+      "effective": "2025-11-13",
+      "note": "Penalties activate at Phase 2, not at the full-compliance date. Deployment planning calibrated to May 2027 is nine months out of phase."
+    },
+    {
+      "name": "Drugs and Magic Remedies (Objectionable Advertisements) Act, 1954",
+      "match": "Drugs and Magic Remedies",
+      "status": "current",
+      "note": "Schedule lists 54 conditions. Rules citing it must enumerate all 54, not a sample."
+    },
+    {
+      "name": "Promotion and Regulation of Online Gaming Act, 2025",
+      "match": "Act 32 of 2025|Online Gaming Act, 2025",
+      "status": "current",
+      "effective": "2025-10-01",
+      "note": "Total prohibition on offering, facilitating and advertising online money games. E-sports recognised under the National Sports Governance Act 2025 and online social games without stakes are carved out."
+    },
+    {
+      "name": "Cigarettes and Other Tobacco Products Act, 2003",
+      "match": "COTPA|Cigarettes and Other Tobacco",
+      "status": "current"
+    },
+    {
+      "name": "Digital Personal Data Protection Act, 2023",
+      "match": "DPDP Act 2023",
+      "status": "current"
+    }
+  ]
+}

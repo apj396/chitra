@@ -1,0 +1,37 @@
+{
+  "note": "Pinned versions per v1.2 §A.4. Curator-maintained. A pin is a tested version, not an exemption: see enforcement_date_all_versions in the sweep findings.",
+  "last_reviewed": "2026-05-16",
+  "servers": {
+    "meta-marketing": {
+      "version": "v25.0",
+      "auth_scopes": ["ads_management", "ads_read", "business_management"],
+      "methods": [
+        {"name": "campaign.create", "fields": [
+          {"name": "objective", "type": "string", "required": true},
+          {"name": "special_ad_categories", "type": "array"},
+          {"name": "dma_codes", "type": "array"}]},
+        {"name": "adset.create", "fields": [
+          {"name": "placements", "type": "array",
+           "enum": ["instagram_reel", "instagram_story", "instagram_explore_feed",
+                    "facebook_feed", "facebook_reel", "messenger_stories"]},
+          {"name": "targeting", "type": "object"}]},
+        {"name": "insights.read", "fields": [
+          {"name": "metrics", "type": "array",
+           "enum": ["post_reach", "page_reach", "video_impressions",
+                    "story_impressions", "spend", "clicks"]}]}
+      ]
+    },
+    "google-ads-mcp": {
+      "version": "v23.1",
+      "methods": [
+        {"name": "asset.text_guidelines.set", "fields": [
+          {"name": "must_include", "type": "array"}]},
+        {"name": "campaign.create", "fields": [
+          {"name": "channel_type", "type": "string", "required": true}]}
+      ]
+    },
+    "bhashini-mcp": {"version": "2.4.0", "methods": [
+      {"name": "translate", "fields": [{"name": "source_lang", "type": "string"}]}]},
+    "chitra-regdb": {"version": "1.3.7"}
+  }
+}

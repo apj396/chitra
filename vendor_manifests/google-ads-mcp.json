@@ -1,0 +1,19 @@
+{
+  "version": "v25.0",
+  "released": "2026-07-22",
+  "changelog_url": "https://developers.google.com/google-ads/api/docs/release-notes",
+  "methods": [
+    {"name": "asset.text_guidelines.set",
+     "renamed_fields": [{"from": "must_include", "to": "required_phrases"}],
+     "fields": [{"name": "required_phrases", "type": "array"}]},
+    {"name": "campaign.create", "fields": [
+      {"name": "channel_type", "type": "string", "required": true},
+      {"name": "synthetic_content_attestation", "type": "object", "required": true}]},
+    {"name": "asset.synthetic_content_info.set", "fields": [
+      {"name": "attestation", "type": "string", "required": true}]}
+  ],
+  "deprecations": [
+    {"summary": "Content API for Shopping sunsets; migrate to the Merchant API",
+     "sunset_date": "2026-08-18", "affected_methods": ["campaign.create"]}
+  ]
+}
