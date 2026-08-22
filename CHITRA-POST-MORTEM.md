@@ -52,6 +52,12 @@ The ID pattern is the clean illustration. It admitted exactly two uppercase segm
 
 **Mitigation.** A required-facet layer where an unresolvable field is a *miss*, not a `False`. A miss converts any PASS to INCONCLUSIVE and names the field. Silence became a question instead of an approval.
 
+**Fourth instance, found last — inside a gate.** The field census hardcoded the specification filenames with one separator style and joined them onto the spec directory. On a machine whose documents use the other style it resolved nothing, recovered **0 of 11 artifact schemas**, compared thirty-five rules against an empty set, and printed `UNDECLARED FIELD READS: 0` — a perfect score for having done no work. It reported `PASS` for eight days.
+
+This is the same defect the gate exists to detect, sitting inside the gate. It was found only because a reviewer read the gate's own output line by line rather than trusting the summary.
+
+The census now resolves filenames through the same separator-tolerant finder the rest of the system uses, and exits non-zero on zero schemas: **a verification tool that verifies nothing and reports green is worse than one that fails.** A failing gate gets fixed. A vacuous one gets trusted.
+
 ### 2.2 Two documents, each internally coherent, contradicting where nothing checked
 
 Nineteen rules declared they applied to `verbal_deck`. No such artifact type exists; it is a sub-object inside `concept_bible`. A cross-reference matrix silently translated it when that matrix was authored, and the translation was never written back. Result: **`concept_bible` had zero applicable rules.** The artifact carrying every headline, script and visual concept in a campaign passed the sanitizer with nothing running.
