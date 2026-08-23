@@ -11,6 +11,7 @@ USAGE
     python run_slice.py --offline          fixtures only, no key, no spend
     python run_slice.py --packet mine.json a different client
     python run_slice.py --model <id>       override the model id
+    python run_slice.py --ledger <path>    write the audit trail elsewhere
 
 The key is read from the ANTHROPIC_API_KEY environment variable and is never
 written to disk, never printed, and never included in the run output.
@@ -63,13 +64,14 @@ def load_packet(path):
     return json.load(open(path, encoding="utf-8"))
 
 
-def build_context(packet):
+def build_context(packet, audits=None):
     """Tenant, campaign and services context for the run.
 
-    Cultural audits are seeded as completed at low risk for concept ids C01 to
-    C12. That is a stand-in for a human review that has not happened. It is
-    flagged in the run report rather than hidden, because an unaudited slate
-    would otherwise stall the run for the wrong reason.
+    Cultural audits are not read here. They arrive as the `audits` argument,
+    which only the re-judge path supplies, after binding each one to a digest
+    of the creative it was recorded on. A generated slate is unreviewed by
+    definition, so the cultural rules go inconclusive and the run routes to
+    the cultural_review queue. That is the truth rather than a stall.
     """
     return {
         "tenant": {
@@ -89,16 +91,16 @@ def build_context(packet):
             "research_coverage_waivers": packet.get("research_coverage_waivers"),
         },
         "services": SV.default_services(),
-        # No seeded audits. Earlier runs pre-filled C01..C12 as reviewed at low
-        # risk, which was a fiction, and once the ledger existed it became a
-        # recorded fiction. It also broke silently the moment a model numbered
-        # its territories t01..t12 instead. Cultural rules now go inconclusive
-        # and route to the cultural_review queue, which is the truth: no human
-        # has looked at this.
-        "cultural_risk_audits": json.load(
-            open(os.path.join(HERE, "cultural_audits.json"), encoding="utf-8")
-        ).get("audits", {}) if os.path.exists(
-            os.path.join(HERE, "cultural_audits.json")) else {},
+        # No audits here, ever. Earlier runs pre-filled C01..C12 as reviewed at
+        # low risk, which was a fiction, and once the ledger existed it became
+        # a recorded fiction. Reading cultural_audits.json from disk was the
+        # same fiction arriving by a different door: concept ids are
+        # slate-local and reset to C01 every run, so a review of one campaign's
+        # first concept presented as the cultural risk level of a different
+        # campaign's first concept. A slate that does not exist yet cannot have
+        # been reviewed. Audits enter through _rejudge, against the slate that
+        # was actually read, matched on a digest of its creative.
+        "cultural_risk_audits": dict(audits or {}),
         "cultural_reviewer": packet.get("cultural_reviewer"),
     }
 
@@ -163,6 +165,18 @@ def main():
                                                       "claude-sonnet-5"))
     ap.add_argument("--offline", action="store_true")
     ap.add_argument("--out", default=os.path.join(HERE, "run_output"))
+    ap.add_argument("--audits", default=None,
+                    help="Cultural audits file. Read only by --slate, which "
+                         "matches each audit against a digest of the creative "
+                         "it was recorded on. A generated run never reads it: "
+                         "a slate that does not exist yet cannot have been "
+                         "reviewed.")
+    ap.add_argument("--ledger", default=None,
+                    help="Audit ledger path. Anything automated must pass a "
+                         "temporary one. chitra_review.py grew this flag after "
+                         "68 of the first 112 entries in the real ledger turned "
+                         "out to be test fixtures; a scheduled offline run of "
+                         "this script is the same hazard by a different route.")
     ap.add_argument("--slate", default=None,
                     help="Path to an existing 03-concept-slate.json. Re-judges "
                          "that slate against the current registry and the "
@@ -197,6 +211,13 @@ def main():
     packet = load_packet(args.packet)
     context = build_context(packet)
 
+    audits_path = args.audits or os.path.join(HERE, "cultural_audits.json")
+    if not args.slate and os.path.exists(audits_path):
+        say("!", "cultural_audits.json exists and is deliberately not read for "
+                 "a generated slate. These concepts are new; nobody has "
+                 "reviewed them. Close the loop with --slate after recording "
+                 "a review.", YELLOW)
+
     if args.slate:
         return _rejudge(args, packet, context, outdir,
                         {"started_at": started.isoformat(), "model": None,
@@ -223,7 +244,7 @@ def main():
         schema_path=os.path.join(HERE, "rule_object.schema.json"))
     say("+", f"Rule registry loaded: {len(registry.rules)} rules", DIM)
 
-    sink = AUD.AuditSink(tenant_id=packet.get("tenant_id"))
+    sink = AUD.AuditSink(path=args.ledger, tenant_id=packet.get("tenant_id"))
     st = sink.verify()
     say("+" if st.ok else "x", f"Audit ledger: {st}", GREEN if st.ok else RED)
     if not st.ok:
@@ -503,7 +524,7 @@ def _rejudge(args, packet, context, outdir, report):
 
     registry = S.RuleRegistry.load(
         schema_path=os.path.join(HERE, "rule_object.schema.json"))
-    sink = AUD.AuditSink(tenant_id=packet.get("tenant_id"))
+    sink = AUD.AuditSink(path=args.ledger, tenant_id=packet.get("tenant_id"))
     st = sink.verify()
     say("+" if st.ok else "x", f"Audit ledger: {st}", GREEN if st.ok else RED)
     if not st.ok:
@@ -514,7 +535,13 @@ def _rejudge(args, packet, context, outdir, report):
     say("+", f"{len(slate.get('concepts_approved', []))} approved concept(s), "
              f"no model call", DIM)
 
-    audits = context.get("cultural_risk_audits") or {}
+    import chitra_review as _R
+    raw = _R.load_audits(args.audits)
+    audits, dropped = _R.bind_audits(raw, slate)
+    for cid, why in dropped:
+        say("!", f"Ignoring the audit filed under {cid}: {why}. That concept "
+                 f"counts as unreviewed.", YELLOW)
+    context["cultural_risk_audits"] = audits
     ids = [c["id"] for c in slate.get("concepts_approved", [])]
     reviewed = [i for i in ids if audits.get(i, {}).get("completed")]
     say("+" if len(reviewed) == len(ids) else "!",

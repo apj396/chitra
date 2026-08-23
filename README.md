@@ -1,6 +1,6 @@
 # CHITRA
 
-A compliance engine for AI-generated advertising, built against Indian regulatory law. Two agents, forty-three enforceable rules, a hash-chained audit ledger, and eleven gates that run on every commit.
+A compliance engine for AI-generated advertising, built against Indian regulatory law. Two agents, forty-three enforceable rules, a hash-chained audit ledger, and twelve gates that run on every commit.
 
 **Everything claimed in [`CHITRA-POST-MORTEM.md`](CHITRA-POST-MORTEM.md) is reproducible on your machine in three commands.**
 
@@ -9,12 +9,14 @@ A compliance engine for AI-generated advertising, built against Indian regulator
 ## Run it
 
 ```bash
-git clone https://github.com/apj396/chitra.git
+git -c credential.helper= clone https://github.com/apj396/chitra.git
 cd chitra && pip install -r requirements.txt
 python verify_all.py
 ```
 
-Roughly two seconds. No API key, no network, no accounts. Eleven gates, 371 tests.
+Roughly two seconds. No API key, no network, no accounts. Twelve gates, 412 checks: 385 unit tests across 8 suites, plus 27 assertions on a live pipeline run.
+
+The `-c credential.helper=` is deliberate. It strips any cached GitHub token for that one command, so the clone proves the repository is reachable by someone who is not signed in. Without it a private repository clones fine for its owner and 404s for everyone else, which is exactly what happened here: see §2.1 of the post-mortem.
 
 ```
 SUMMARY
@@ -28,6 +30,7 @@ SUMMARY
   PASS  sweep               pinned vendor APIs vs upstream
   PASS  ledger              audit chain: tamper evidence and DPDP erasure
   PASS  review              the human gate: named cultural review
+  PASS  offline slice       the whole pipeline, no key, no network, no spend
   PASS  implementability    how much of the rule set genuinely enforces
 ```
 
@@ -75,19 +78,29 @@ To see a gate fail on purpose, open `chitra_rules.json`, change any `citation` t
 
 ## Running the pipeline
 
-The gates need nothing. Generating a campaign needs an Anthropic API key.
+The gates need nothing. Neither does a full pipeline run, if you do not need real model output.
+
+```bash
+python run_slice.py --offline              # the whole slice, no key, no spend
+```
+
+Drishti reads the onboarding packet and writes a creative brief, Disha interrogates it, diverges into twelve territories, gates for variance, scores, kills and writes a concept slate, both artifacts clear the schema gate and the compliance sanitizer, and the slate is held at the cultural gate. Same code path, same compliance enforcement, same audit entries. Only the model responses are fixtures. This is the recommended way to see what the system does before deciding whether to spend anything, and the `offline slice` gate proves it still works on every commit.
+
+Real model output needs an Anthropic API key.
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...        # Windows: set ANTHROPIC_API_KEY=sk-ant-...
 python run_slice.py                        # about 6 minutes, a few cents
-python run_slice.py --offline              # fixtures, no key, no spend
 ```
+
+`--ledger <path>` sends the audit trail somewhere other than `audit/chitra-audit.jsonl`. Anything automated must pass it. The first real audit trail in this project had 68 test fixtures in its first 112 entries because a test suite wrote to the production ledger, and an unattended pipeline run is the same hazard by a different route.
 
 Artifacts land in `run_output/<timestamp>/`. A generated slate is held at the cultural gate until a named human reviews it:
 
 ```bash
 python chitra_review.py brief  --slate run_output/<ts>/03-concept-slate.json
-python chitra_review.py record --concept C01 --level low --reviewer "Your Name" \
+python chitra_review.py record --slate run_output/<ts>/03-concept-slate.json \
+    --concept C01 --level low --reviewer "Your Name" \
     --axis religion=low --axis caste=low --axis gender=low \
     --axis region=low --axis political=low --notes "..."
 python run_slice.py --slate run_output/<ts>/03-concept-slate.json   # no model call

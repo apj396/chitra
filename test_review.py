@@ -74,8 +74,8 @@ def test_no_test_writes_to_the_production_ledger():
     entries were fixtures from this file."""
     prod = os.path.join(HERE, "audit", "chitra-audit.jsonl")
     before = os.path.getsize(prod) if os.path.exists(prod) else 0
-    a, _ = tmp()
-    R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", "C01",
+    a, s = tmp()
+    R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", "C01",
             "--level", "low", "--reviewer", "A Patil", "--notes", "n"])
     after = os.path.getsize(prod) if os.path.exists(prod) else 0
     check("recording under --ledger leaves the production ledger untouched",
@@ -94,7 +94,7 @@ def test_review_clears_the_block_and_nothing_else_does():
     check("and does not pass", not before.passed)
 
     for cid in ("C01", "C02"):
-        R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", cid, "--level", "low",
+        R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", cid, "--level", "low",
                 "--reviewer", "A Patil", "--notes", "reviewed"])
     after = sanitize(R.load_audits(a))
     check("a recorded review on every concept clears it", after.passed,
@@ -107,16 +107,16 @@ def test_review_clears_the_block_and_nothing_else_does():
 
 
 def test_a_review_must_carry_a_name():
-    a, _ = tmp()
-    rc = R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", "C01", "--level", "low",
+    a, s = tmp()
+    rc = R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", "C01", "--level", "low",
                  "--reviewer", "   ", "--notes", "x"])
     check("a blank reviewer name is refused", rc == 2, f"exit {rc}")
     check("and nothing was written", not R.load_audits(a))
 
 
 def test_the_worst_axis_governs():
-    a, _ = tmp()
-    R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", "C01", "--level", "low",
+    a, s = tmp()
+    R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", "C01", "--level", "low",
             "--reviewer", "A Patil", "--axis", "religion=high",
             "--axis", "gender=low", "--notes", "festival framing"])
     rec = R.load_audits(a)["C01"]
@@ -131,10 +131,10 @@ def _graded(**axes):
     base = dict(religion="low", caste="low", gender="low", region="low",
                 political="low")
     base.update(axes)
-    a, _ = tmp()
+    a, s = tmp()
     for c in SLATE["concepts_approved"]:
         args = ["--audits", a, "--ledger", LEDGER, "record",
-                "--concept", c["id"], "--level", "low",
+                "--slate", s, "--concept", c["id"], "--level", "low",
                 "--reviewer", "A Patil", "--notes", "n"]
         for axis, lvl in base.items():
             args += ["--axis", f"{axis}={lvl}"]
@@ -195,12 +195,12 @@ def test_a_grade_is_not_decorative():
 
 
 def test_invalid_input_is_refused():
-    a, _ = tmp()
+    a, s = tmp()
     check("an unknown axis is refused",
-          R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", "C01", "--level", "low",
+          R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", "C01", "--level", "low",
                   "--reviewer", "A", "--axis", "astrology=low"]) == 2)
     check("a bad per-axis level is refused",
-          R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", "C01", "--level", "low",
+          R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", "C01", "--level", "low",
                   "--reviewer", "A", "--axis", "religion=catastrophic"]) == 2)
     check("nothing partial was written", not R.load_audits(a))
 
@@ -210,7 +210,7 @@ def test_status_reports_what_is_outstanding():
     check("status exits non-zero while concepts are unaudited",
           R.main(["--audits", a, "status", "--slate", s]) == 1)
     for cid in ("C01", "C02"):
-        R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept", cid, "--level", "low",
+        R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s, "--concept", cid, "--level", "low",
                 "--reviewer", "A Patil", "--notes", "n"])
     check("and zero once every one is recorded",
           R.main(["--audits", a, "status", "--slate", s]) == 0)
@@ -311,7 +311,7 @@ def test_disha_writes_no_questions_into_the_artifact():
 
 def test_the_brief_surfaces_only_the_axes_the_concept_touches():
     import chitra_cultural_assistant as CA
-    a, _ = tmp()
+    a, s = tmp()
     assistant = CA.CulturalAssistant(register=R._load_register(),
                                      precedent=R._load_precedent())
     ctx = {"cultural_risk_audits": {}}
@@ -330,6 +330,88 @@ def test_the_brief_surfaces_only_the_axes_the_concept_touches():
     check("the brief still issues no verdict", rb.to_dict()["verdict"] is None)
 
 
+def test_an_audit_is_bound_to_the_creative_it_reviewed():
+    """The defect this exists to prevent, in its observed form.
+
+    Concept ids are slate-local and reset to C01 on every run. Before audits
+    carried a fingerprint, a review recorded against one campaign's first
+    concept presented as the cultural risk level of a different campaign's
+    first concept, in a different category, that no human had read.
+    """
+    a, s = tmp()
+    R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s,
+            "--concept", "C01", "--level", "low", "--reviewer", "A Patil",
+            "--notes", "n"])
+    rec = R.load_audits(a)["C01"]
+    check("a recorded audit carries a fingerprint",
+          bool(rec.get("concept_fingerprint")))
+    check("and names the concept it reviewed, for a human reading the file",
+          rec.get("concept_title") == "The Real Culprit",
+          str(rec.get("concept_title")))
+
+    # A different campaign whose first concept is also called C01.
+    other = {"concepts_approved": [
+        {"id": "C01", "title": "The Weather Did It",
+         "proposition": "Built for clothes that cannot dry outside",
+         "visual_direction": "Split screen: sky above, laundry below",
+         "verbal_hook": {"primary": "Blame the sky, not the soap"}}]}
+    bound, dropped = R.bind_audits(R.load_audits(a), other)
+    check("an audit does not follow a concept id onto other creative",
+          bound == {}, str(list(bound)))
+    check("and the reason names the mismatch, rather than failing silently",
+          dropped and "mismatch" in dropped[0][1], str(dropped))
+
+    bound, dropped = R.bind_audits(R.load_audits(a), {"concepts_approved": [
+        c for c in SLATE["concepts_approved"] if c["id"] == "C01"]})
+    check("the audit still binds to the concept it was recorded on",
+          list(bound) == ["C01"], str(list(bound)))
+    check("and nothing is dropped in that case", not dropped, str(dropped))
+
+
+def test_editing_a_reviewed_concept_revokes_its_clearance():
+    a, s = tmp()
+    R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s,
+            "--concept", "C01", "--level", "low", "--reviewer", "A Patil",
+            "--notes", "n"])
+    edited = {"concepts_approved": [
+        dict(SLATE["concepts_approved"][0],
+             proposition="Now says something the reviewer never read")]}
+    bound, dropped = R.bind_audits(R.load_audits(a), edited)
+    check("a rewritten proposition loses the sign-off", bound == {},
+          "the reviewer approved what they read, not the slot it sat in")
+    check("and the concept counts as unreviewed downstream",
+          not sanitize(bound).passed)
+
+
+def test_an_unbound_audit_clears_nothing():
+    a, s = tmp()
+    R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s,
+            "--concept", "C01", "--level", "low", "--reviewer", "A Patil",
+            "--notes", "n"])
+    legacy = R.load_audits(a)
+    legacy["C01"].pop("concept_fingerprint")
+    bound, dropped = R.bind_audits(legacy, SLATE)
+    check("an audit with no fingerprint is treated as absent", bound == {},
+          "fail closed: it cannot prove what it reviewed")
+    check("and says so rather than passing quietly",
+          dropped and "no fingerprint" in dropped[0][1], str(dropped))
+
+
+def test_recording_without_a_slate_is_refused():
+    a, s = tmp()
+    rc = R.main(["--audits", a, "--ledger", LEDGER, "record", "--concept",
+                 "C01", "--level", "low", "--reviewer", "A Patil",
+                 "--notes", "n"])
+    check("a review that names no slate is refused", rc == 2, f"exit {rc}")
+    check("and nothing was written", not R.load_audits(a))
+
+    rc = R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s,
+                 "--concept", "C99", "--level", "low", "--reviewer",
+                 "A Patil", "--notes", "n"])
+    check("a concept absent from that slate is refused", rc == 2, f"exit {rc}")
+    check("and still nothing was written", not R.load_audits(a))
+
+
 def main():
     for fn in (test_no_test_writes_to_the_production_ledger,
                test_review_clears_the_block_and_nothing_else_does,
@@ -343,6 +425,10 @@ def main():
                test_markers_match_whole_words_only,
                test_the_scanner_does_not_read_its_own_output,
                test_disha_writes_no_questions_into_the_artifact,
+               test_an_audit_is_bound_to_the_creative_it_reviewed,
+               test_editing_a_reviewed_concept_revokes_its_clearance,
+               test_an_unbound_audit_clears_nothing,
+               test_recording_without_a_slate_is_refused,
                test_the_brief_surfaces_only_the_axes_the_concept_touches):
         try:
             fn()

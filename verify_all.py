@@ -21,6 +21,9 @@ Each gate answers a different question:
   ledger           Is the audit chain tamper-evident, and can erasure be
                    honoured without destroying the proof?
   review           Does a named human review actually gate the pipeline?
+  offline slice    Does the whole slice still run end to end with no API key,
+                   no network call and no spend, without writing to the
+                   production audit ledger?
 
 Usage:
     python verify_all.py           run everything
@@ -55,6 +58,8 @@ GATES = [
     ("ledger", "audit chain: tamper evidence and DPDP erasure",
      ["test_audit.py"]),
     ("review", "the human gate: named cultural review", ["test_review.py"]),
+    ("offline slice", "the whole pipeline, no key, no network, no spend",
+     ["test_offline_slice.py"]),
     ("implementability", "how much of the rule set genuinely enforces",
      ["analyse_implementability.py"]),
 ]

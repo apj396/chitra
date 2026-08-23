@@ -20,7 +20,7 @@ The specification had been reviewed repeatedly and declared complete three separ
 
 None of these was caught by human review. Every one was caught by execution, or by a mechanical check that runs on every commit.
 
-The finished substrate: 43 rules, 35 genuinely enforcing, 371 tests across 8 suites, 11 gates, 5 backing services, an append-only hash-chained ledger, and a campaign of record cleared by a named human reviewer whose signature is on the chain.
+The finished substrate: 43 rules, 35 genuinely enforcing, 385 tests across 8 suites, 12 gates, 5 backing services, an append-only hash-chained ledger, and a campaign of record cleared by a named human reviewer whose signature is on the chain.
 
 ---
 
@@ -34,7 +34,7 @@ The Indian regulatory surface it enforces against is genuinely adversarial in th
 
 ## 2. The defect taxonomy
 
-Every defect found fell into one of five classes. The class matters more than the individual defect, because the class determines what kind of check catches it.
+Every defect found fell into one of five classes. The class matters more than the individual defect, because the class determines what kind of check catches it. The first class has six instances, the last two of which were found by the checks built to catch the earlier ones.
 
 ### 2.1 Fails open while reporting success
 
@@ -57,6 +57,28 @@ The ID pattern is the clean illustration. It admitted exactly two uppercase segm
 This is the same defect the gate exists to detect, sitting inside the gate. It was found only because a reviewer read the gate's own output line by line rather than trusting the summary.
 
 The census now resolves filenames through the same separator-tolerant finder the rest of the system uses, and exits non-zero on zero schemas: **a verification tool that verifies nothing and reports green is worse than one that fails.** A failing gate gets fixed. A vacuous one gets trusted.
+
+**Fifth instance, in this document.** The verification section below invites the reader to clone the repository and run the gates. Before publishing, that instruction was tested: a clean clone into an empty directory, `pip install`, all gates green. The test passed. The repository was private.
+
+The clone succeeded because Git Credential Manager supplied the author's own token without being asked. Nothing was wrong with the code, the command, or the result. The check simply answered a different question from the one it appeared to answer: not *can anyone fetch this*, but *can I fetch this*. For two days the document's central claim, that every figure in it is reproducible on your machine, resolved to a 404 for every reader.
+
+It was caught only when a reviewer without an account tried the link and could not fetch it.
+
+**Mitigation.** The clone in every verification instruction now runs `git -c credential.helper=`, which strips cached credentials for that one command. An unauthenticated path has to be tested unauthenticated.
+
+The general form is worth stating, because it is the shape of all five: **a check inherits the ambient privileges of whoever runs it, and those privileges are invisible in the output.** The field census inherited a filename convention. This inherited an identity. In both cases the report said PASS and meant something narrower than it appeared to.
+
+**Sixth instance, found by the gate written to catch the fifth.** A new gate runs the whole pipeline offline on every commit. It passed on the machine it was written on and failed on the author's, which is where the audit file lives.
+
+Cultural reviews were stored keyed on concept id. Concept ids are slate-local: every generated slate numbers its concepts from C01. A review recorded against one campaign's first concept therefore attached itself to every later campaign's first concept, in any category, reviewed by nobody. Observed directly: audits signed for *The Real Culprit* and *72 Hour Test* presenting as the cultural risk level of *The Weather Did It* and *Balcony Out of Service*, with the remaining three concepts showing the unreviewed level and the split visible in the output for anyone who looked.
+
+Those audits happened to be graded low, so the slate stayed queued and nothing shipped. Had they been graded high, an unrelated run would have inherited a **blocking** verdict from creative no one had read. The direction of the error was luck.
+
+The same file already carried a comment explaining that seeded C01 to C12 audits had been removed because pre-filling them was a fiction. The fiction had returned through a different door, from disk instead of from a seed, and the comment sat directly above the line that reintroduced it.
+
+**Mitigation, in two parts.** A generated slate no longer reads the audit file at all: a slate that does not exist yet cannot have been reviewed, and audits now enter only through the re-judge path, against the slate actually read. Within that path each audit carries a digest of the creative it was recorded on. An audit whose digest does not match is treated as absent, and so is one carrying no digest, which is every audit written before this. Editing a reviewed concept revokes its clearance, which is the correct reading of what a reviewer signed.
+
+The generalisation from the fifth instance held, and predicted this one: **a check inherits the ambient state of wherever it runs.** Identity, filename convention, and now the contents of the working directory. The gate that found this was itself guilty of it, since it asserted against whatever audit file happened to be present, and it is now given its own.
 
 ### 2.2 Two documents, each internally coherent, contradicting where nothing checked
 
@@ -101,7 +123,7 @@ An append-only ledger cannot be cleaned. The contaminated one was archived rathe
 | Conformance | Rules against their admission schema; citations against live law | 52 findings across 25 sites |
 | Field census | Rule field reads against artifact schemas | 61 fields, 279 rule/artifact pairs |
 | Compatibility sweep | Pinned vendor APIs against upstream | 11 changes, 7 tickets, 1 SLA already breached |
-| Test suites | 371 tests, 8 suites | — |
+| Test suites | 385 tests, 8 suites; 12 gates, 412 checks | — |
 
 The sweep was specified in May and never scheduled. In the interval Meta shipped Marketing API v26.0, Google shipped Ads API v25, Meta replaced Nielsen DMA targeting with Comscore Markets and unmigrated campaigns silently stopped delivering, and three metrics the reporting agent reads were retired. All were found by hand, months late. The sweep now finds all of them on a first run, and one ticket opens already breached because enforcement passed while nothing was watching.
 
@@ -202,12 +224,14 @@ The evidence chain is six entries: five cultural reviews under the reviewer's na
 Every figure in this document is reproducible on your machine in three commands, with no API key, no network and no account.
 
 ```bash
-git clone https://github.com/apj396/chitra.git
+git -c credential.helper= clone https://github.com/apj396/chitra.git
 cd chitra && pip install -r requirements.txt
 python verify_all.py
 ```
 
-Two seconds. Eleven gates, 371 tests, one dependency.
+Two seconds. Twelve gates, 412 checks, one dependency.
+
+The `-c credential.helper=` strips any cached token for that one command. A plain clone succeeds for the repository's owner whether or not anyone else can reach it, which is the fifth instance in §2.1.
 
 The repository contains the specification documents, the rules as executable code, the audit ledger implementation, the twenty architectural decisions with their reasoning, and the gates that found everything in §2. To watch a gate fail on purpose, empty any `citation` field in `chitra_rules.json` and run it again: the registry rejects wholesale rather than loading the subset that parsed, because partial load is exactly what turned a schema error into silent under-enforcement.
 

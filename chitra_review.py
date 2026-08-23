@@ -32,6 +32,7 @@ USAGE
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -64,6 +65,73 @@ def save_audits(audits, path=None):
 
 def load_slate(path):
     return json.load(open(path, encoding="utf-8"))
+
+
+# Which fields of a concept a reviewer actually looked at. Scores are the
+# machine's, production_complexity is a cost estimate, and cultural_risk is
+# written BACK from the audit itself, so including it would change the
+# fingerprint the moment the review was applied and never match again.
+FINGERPRINT_FIELDS = ("title", "proposition", "visual_direction",
+                      "verbal_hook", "target_subsegment")
+
+
+def concept_fingerprint(concept):
+    """A stable digest of the creative a reviewer saw.
+
+    Audits used to be keyed on concept id alone. Concept ids are slate-local
+    and reset to C01 on every run, so a review recorded against one campaign's
+    first concept silently attached itself to a different campaign's first
+    concept, in a different category, reviewed by nobody. The observed case:
+    audits for 'The Real Culprit' and '72 Hour Test' presenting as the cultural
+    risk level of 'The Weather Did It' and 'Balcony Out of Service'.
+
+    Binding to content rather than position fixes both halves. A different
+    concept cannot match. An edited concept stops matching, which is correct:
+    the reviewer signed off on what they read, not on whatever later occupied
+    the same slot.
+    """
+    body = {k: concept.get(k) for k in FINGERPRINT_FIELDS
+            if concept.get(k) is not None}
+    if not body:
+        return None
+    blob = json.dumps(body, sort_keys=True, ensure_ascii=False,
+                      separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def find_concept(slate, concept_id):
+    for c in slate.get("concepts_approved", []) or []:
+        if c.get("id") == concept_id:
+            return c
+    return None
+
+
+def bind_audits(audits, slate):
+    """Keep only audits that provably belong to the concepts in THIS slate.
+
+    Returns (bound, dropped). An audit is dropped when it carries no
+    fingerprint, which is every audit written before this existed, or when its
+    fingerprint does not match the concept now holding that id. Dropped means
+    treated as absent, so the concept routes to cultural review. That is the
+    fail-closed direction: an audit that cannot prove what it reviewed is not
+    evidence that anything was reviewed.
+    """
+    bound, dropped = {}, []
+    for c in slate.get("concepts_approved", []) or []:
+        cid = c.get("id")
+        a = audits.get(cid)
+        if not a:
+            continue
+        recorded = a.get("concept_fingerprint")
+        if not recorded:
+            dropped.append((cid, "no fingerprint: recorded before audits were "
+                                 "bound to content"))
+        elif recorded != concept_fingerprint(c):
+            dropped.append((cid, "fingerprint mismatch: this audit was "
+                                 "recorded against different creative"))
+        else:
+            bound[cid] = a
+    return bound, dropped
 
 
 def cmd_brief(args):
@@ -127,6 +195,32 @@ def cmd_record(args):
                   f"axis governs.")
             level = worst
 
+    # Bind the audit to the creative the reviewer read. Without --slate there
+    # is nothing to bind to, and an unbound audit clears nothing downstream, so
+    # refuse rather than write a record that will silently never apply.
+    if not args.slate:
+        print("--slate is required. A review has to name the slate it read, "
+              "or it is a signature on nothing in particular:\n"
+              "    python chitra_review.py record --slate "
+              "run_output/<ts>/03-concept-slate.json --concept C01 ...")
+        return 2
+    try:
+        slate = load_slate(args.slate)
+    except (OSError, ValueError) as e:
+        print(f"cannot read the slate at {args.slate}: {e}")
+        return 2
+    concept = find_concept(slate, args.concept)
+    if concept is None:
+        ids = [c.get("id") for c in slate.get("concepts_approved", []) or []]
+        print(f"no approved concept {args.concept!r} in that slate; "
+              f"it has {ids}")
+        return 2
+    fingerprint = concept_fingerprint(concept)
+    if not fingerprint:
+        print(f"concept {args.concept} carries none of the reviewable fields "
+              f"{list(FINGERPRINT_FIELDS)}; there is nothing to review")
+        return 2
+
     audits = load_audits(args.audits)
     audits[args.concept] = {
         "completed": True,
@@ -135,6 +229,8 @@ def cmd_record(args):
         "reviewer": args.reviewer.strip(),
         "reviewed_at": datetime.now(timezone.utc).isoformat(),
         "notes": args.notes,
+        "concept_fingerprint": fingerprint,
+        "concept_title": concept.get("title"),
     }
     save_audits(audits, args.audits)
 
@@ -147,7 +243,9 @@ def cmd_record(args):
         AUD.AuditSink(path=args.ledger).append(
             "cultural.review_recorded",
             {"concept_id": args.concept, "level": level, "per_axis": per_axis,
-             "reviewer": args.reviewer.strip(), "notes": args.notes})
+             "reviewer": args.reviewer.strip(), "notes": args.notes,
+             "concept_fingerprint": fingerprint,
+             "concept_title": concept.get("title")})
     except Exception as e:
         print(f"(ledger append failed: {e})")
 
@@ -160,7 +258,9 @@ def cmd_record(args):
 
 def cmd_status(args):
     slate = load_slate(args.slate)
-    audits = load_audits(args.audits)
+    audits, dropped = bind_audits(load_audits(args.audits), slate)
+    for cid, why in dropped:
+        print(f"ignoring the audit filed under {cid}: {why}")
     missing = []
     print(f"{'CONCEPT':<10}{'AUDITED':<10}{'LEVEL':<10}{'REVIEWER':<22}TITLE")
     for c in slate.get("concepts_approved", []):
@@ -208,6 +308,11 @@ def main(argv=None):
     b.add_argument("--out", default=None)
 
     r = sub.add_parser("record", help="record a reviewer's decision")
+    r.add_argument("--slate", default=None,
+                   help="The 03-concept-slate.json the reviewer read. The "
+                        "audit is bound to a digest of that concept's "
+                        "creative, so it cannot drift onto a later slate that "
+                        "happens to reuse the same concept id.")
     r.add_argument("--concept", required=True)
     r.add_argument("--level", required=True, choices=LEVELS)
     r.add_argument("--reviewer", required=True)
