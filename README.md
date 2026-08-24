@@ -14,7 +14,7 @@ cd chitra && pip install -r requirements.txt
 python verify_all.py
 ```
 
-Roughly two seconds. No API key, no network, no accounts. Twelve gates, 412 checks: 385 unit tests across 8 suites, plus 27 assertions on a live pipeline run.
+Roughly two seconds. No API key, no network, no accounts. Twelve gates, 413 checks: 386 unit tests across 8 suites, plus 27 assertions on a live pipeline run.
 
 The `-c credential.helper=` is deliberate. It strips any cached GitHub token for that one command, so the clone proves the repository is reachable by someone who is not signed in. Without it a private repository clones fine for its owner and 404s for everyone else, which is exactly what happened here: see §2.1 of the post-mortem.
 
@@ -77,6 +77,8 @@ To see a gate fail on purpose, open `chitra_rules.json`, change any `citation` t
 ---
 
 ## Running the pipeline
+
+For the full review loop end to end — generate, brief, record, re-judge — see [`OPERATING.md`](OPERATING.md). The short version follows.
 
 The gates need nothing. Neither does a full pipeline run, if you do not need real model output.
 

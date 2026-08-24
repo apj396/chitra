@@ -412,6 +412,48 @@ def test_recording_without_a_slate_is_refused():
     check("and still nothing was written", not R.load_audits(a))
 
 
+def test_the_brief_does_not_show_an_audit_it_cannot_bind():
+    """The read-side of the binding defect.
+
+    cmd_brief feeds the audit file into resolve_cultural_audit, which keys on
+    concept id alone. An audit recorded against different creative under the
+    same id would otherwise surface to the reviewer as an inherited audit for
+    this concept. The brief issues no verdict, but a false 'already reviewed
+    at low' in front of a human is exactly what the write side binds against,
+    so the read side binds too.
+    """
+    a, s = tmp()
+    # A legitimate, bound audit for this slate's C01.
+    R.main(["--audits", a, "--ledger", LEDGER, "record", "--slate", s,
+            "--concept", "C01", "--level", "low", "--reviewer", "A Patil",
+            "--notes", "n"])
+    # Now corrupt it: same id, but the fingerprint of other creative.
+    audits = R.load_audits(a)
+    audits["C01"]["concept_fingerprint"] = "0" * 64
+    with open(a, "w", encoding="utf-8") as f:
+        json.dump({"audits": audits}, f)
+
+    slate = R.load_slate(s)
+    bound, dropped = R.bind_audits(audits, slate)
+    check("the brief would bind away a non-matching audit", bound == {},
+          str(list(bound)))
+    check("and name the concept it dropped", dropped and dropped[0][0] == "C01",
+          str(dropped))
+
+    # Straight through the command, to prove the wrapper binds and does not
+    # raise. Output goes to a temp file so the assertion is on a real artifact.
+    out = a + ".brief.md"
+    rc = R.main(["--audits", a, "brief", "--slate", s, "--out", out])
+    check("the brief command completes", rc == 0, f"exit {rc}")
+    body = open(out, encoding="utf-8").read()
+    # The brief prints an Inheritance line per concept. A bound-away audit must
+    # read as absent there, not as 'inherited from the audit for concept C01'.
+    c01_block = body.split("concept C02")[0]
+    check("the foreign audit is not presented as inherited",
+          "inherited from the audit" not in c01_block.lower(),
+          "the brief showed a foreign audit as this concept's own")
+
+
 def main():
     for fn in (test_no_test_writes_to_the_production_ledger,
                test_review_clears_the_block_and_nothing_else_does,
@@ -429,6 +471,7 @@ def main():
                test_editing_a_reviewed_concept_revokes_its_clearance,
                test_an_unbound_audit_clears_nothing,
                test_recording_without_a_slate_is_refused,
+               test_the_brief_does_not_show_an_audit_it_cannot_bind,
                test_the_brief_surfaces_only_the_axes_the_concept_touches):
         try:
             fn()

@@ -26,7 +26,8 @@ name is on it.
 
 USAGE
     python chitra_review.py brief  --slate run_output/<ts>/03-concept-slate.json
-    python chitra_review.py record --concept C01 --level low \\
+    python chitra_review.py record --slate run_output/<ts>/03-concept-slate.json \\
+        --concept C01 --level low \\
         --reviewer "A Patil" --notes "No religious or regional depiction."
     python chitra_review.py status --slate run_output/<ts>/03-concept-slate.json
 """
@@ -138,7 +139,17 @@ def cmd_brief(args):
     slate = load_slate(args.slate)
     assistant = CA.CulturalAssistant(
         register=_load_register(), precedent=_load_precedent())
-    ctx = {"cultural_risk_audits": load_audits(args.audits),
+    # Bind before the brief reads them. resolve_cultural_audit keys on concept
+    # id alone, so an audit recorded against different creative under the same
+    # id would surface here as an inherited_audit that never belonged to this
+    # concept. The brief is read-only, but it is what a human reads to decide,
+    # and a false "already reviewed at low" is the read-side of the very defect
+    # the record and re-judge paths bind against. Same rule everywhere: an
+    # audit is shown only if its fingerprint matches what is on the slate.
+    bound, dropped = bind_audits(load_audits(args.audits), slate)
+    for cid, why in dropped:
+        print(f"ignoring the audit filed under {cid}: {why}")
+    ctx = {"cultural_risk_audits": bound,
            "cultural_reviewer": args.reviewer}
 
     out = []

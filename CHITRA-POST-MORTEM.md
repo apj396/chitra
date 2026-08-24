@@ -20,7 +20,7 @@ The specification had been reviewed repeatedly and declared complete three separ
 
 None of these was caught by human review. Every one was caught by execution, or by a mechanical check that runs on every commit.
 
-The finished substrate: 43 rules, 35 genuinely enforcing, 385 tests across 8 suites, 12 gates, 5 backing services, an append-only hash-chained ledger, and a campaign of record cleared by a named human reviewer whose signature is on the chain.
+The finished substrate: 43 rules, 35 genuinely enforcing, 386 tests across 8 suites, 12 gates, 5 backing services, an append-only hash-chained ledger, and a campaign of record cleared by a named human reviewer whose signature is on the chain.
 
 ---
 
@@ -123,7 +123,7 @@ An append-only ledger cannot be cleaned. The contaminated one was archived rathe
 | Conformance | Rules against their admission schema; citations against live law | 52 findings across 25 sites |
 | Field census | Rule field reads against artifact schemas | 61 fields, 279 rule/artifact pairs |
 | Compatibility sweep | Pinned vendor APIs against upstream | 11 changes, 7 tickets, 1 SLA already breached |
-| Test suites | 385 tests, 8 suites; 12 gates, 412 checks | — |
+| Test suites | 386 tests, 8 suites; 12 gates, 413 checks | — |
 
 The sweep was specified in May and never scheduled. In the interval Meta shipped Marketing API v26.0, Google shipped Ads API v25, Meta replaced Nielsen DMA targeting with Comscore Markets and unmigrated campaigns silently stopped delivering, and three metrics the reporting agent reads were retired. All were found by hand, months late. The sweep now finds all of them on a first run, and one ticket opens already breached because enforcement passed while nothing was watching.
 
@@ -229,7 +229,7 @@ cd chitra && pip install -r requirements.txt
 python verify_all.py
 ```
 
-Two seconds. Twelve gates, 412 checks, one dependency.
+Two seconds. Twelve gates, 413 checks, one dependency.
 
 The `-c credential.helper=` strips any cached token for that one command. A plain clone succeeds for the repository's owner whether or not anyone else can reach it, which is the fifth instance in §2.1.
 
